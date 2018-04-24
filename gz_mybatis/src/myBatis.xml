@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--操作数据库配置信息，对数据进行映射-->
+<configuration>
+	<properties resource="jdbc.properties"></properties>
+		<!-- 设置懒加载 开关 -->
+	<settings>
+		<!-- 开启二级缓存 总开关   这个配置使全局的映射器启用或禁用缓存 -->
+		<setting name="cacheEnabled" value="true"/>
+		<!-- 打开延迟加载的开关  默认为false-->
+		<setting name="lazyLoadingEnabled" value="true" />
+		<!-- 将积极加载改为消息加载即按需加载  默认为true-->
+		<setting name="aggressiveLazyLoading" value="flse"/>
+	</settings>
+	<typeAliases>
+		
+		<!-- 将该包内所有的类定义了别名，别名就是其类名 -->
+		<package name="com.qftjy.bean"/>
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc_driver}" />
+				<property name="url" value="${jdbc_url}" />
+				<property name="username" value="${jdbc_user}" />
+				<property name="password" value="${jdbc_password}" />
+			</dataSource>
+		</environment>
+	</environments>
+<!--相关mappers配置文件-->
+<mappers>
+	<mapper resource="com/qftjy/dao/UsersDao.xml"/>
+	<mapper resource="com/qftjy/dao/TableTestDao.xml"/>
+	<mapper resource="com/qftjy/dao/GradeDao.xml"/>
+	<mapper resource="com/qftjy/dao/TeacherDao.xml"/>
+	<mapper resource="com/qftjy/dao/StudentDao.xml"/>
+</mappers>
+</configuration>

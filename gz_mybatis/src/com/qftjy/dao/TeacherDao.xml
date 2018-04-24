@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.qftjy.dao.TeacherDao"> 
+
+	<!-- 根据  ID查询老师信息，并将该老师对应的班级查询出来   1对1 -->
+	<select id="getTeacherById" parameterType="String" resultMap="getTeacherByIdGrade" >
+		select * from  teacher t LEFT JOIN grade g   ON t.gid=g.gid where t.tid=#{id};
+	</select>
+	<resultMap type="Teacher" id="getTeacherByIdGrade">
+		<id property="tid" column="tid"/>
+		<result property="tname" column="tname"/>
+		<association property="grade" javaType="Grade" >
+			<id property="gid" column="gid"/>
+			<result property="gname" column="gname"/>
+		</association>
+	</resultMap>
+	<!-- 添加老师 -->
+	<insert id="add" parameterType="Teacher">
+		insert into teacher values(#{tid},#{tname},#{gid});
+	</insert>
+	
+	<!-- myBatis动态SQL -->
+	<select id="getListCont" parameterType="Teacher" resultType="Teacher">
+		select * from teacher 
+		<where>
+			<if test="tname!=null">
+				and tname like '%${tname}%'
+			</if>
+			<if test="sex!=null">
+				and sex =#{sex}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 更新 Teacher 数据 -->
+	<update id="updateTeacher" parameterType="Teacher">
+		update teacher 
+		<set>
+			<if test="tname!=null">
+				tname=#{tname},
+			</if>
+			<if test="age!=null">
+				age=#{age},
+			</if>
+			<if test="status!=null">
+				status=#{status},
+			</if>
+			<if test="remark!=null">
+				remark=#{remark},
+			</if>
+		</set>
+		where tid=#{tid}
+	</update>
+	<!-- 批量删除 
+	 delete from Teacher where id in ('aaaa','bbbb','cccc','dddd')
+	-->
+	<delete id="deletBatch"  >
+		delete from Teacher where tid in
+		<foreach collection="array" open="(" separator="," close=")" item="tid">
+			#{tid}
+		</foreach>
+	</delete>
+	
+	<!-- 查询年龄指定年龄区间的老师信息 -->
+	<select id="getTeacherByAge" parameterType="Map" resultType="Teacher">
+		select * from teacher where age >= #{min} and age &lt;= #{max};
+	</select>
+</mapper>

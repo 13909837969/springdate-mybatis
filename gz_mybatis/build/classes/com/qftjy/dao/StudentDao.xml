@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.qftjy.dao.StudentDao"> 
+
+		<!--  根据学生ID，查询学生信息-->
+		<select id="getStudentById"  resultType="Student">
+			select * from student where sid=#{sid} ;
+		</select>
+		
+		<!--  根据学生ID，查询学生信息，并得到班级信息-->
+		<select id="getStudentById1"  resultMap="getStudentById1Map">
+			select * from student where sid=#{sid} ;
+		</select>
+		<resultMap type="Student" id="getStudentById1Map">
+			<id property="sid" column="sid"/>
+			<result property="sname" column="sname"/>
+			<result property="age" column="age"/>
+			<result property="gid" column="gid"/>
+			<association property="grade" javaType="Grade"  column="gid" select="getGradeByGid3"></association>
+		</resultMap>
+		<select id="getGradeByGid3" resultType="Grade">
+			select * from grade where gid=#{gid};
+		</select>
+		
+</mapper>

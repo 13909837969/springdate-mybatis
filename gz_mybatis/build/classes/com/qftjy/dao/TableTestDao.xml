@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.qftjy.dao.TableTestDao"> 
+	<!--1种解决方案：对列进行别名设置  查询 
+	<select id="getById" resultType="TableTest">
+		select t_id as id,t_name as tname from t_test where t_id=#{id};
+	</select>
+	-->
+	<!-- 2种解决方案  ResultMap -->
+	<!-- 
+		反射流程：
+		Jdbc:
+		ReulstSet  rst
+		tObj.setTname(rst.getString("字段名");
+		
+		//TableTest 找对其全限定名  包名.类名
+	   TableTest tObj=Class.forName("com.qfjy.bean.TableTest").new Instance(); //调用其无参构造方法
+	   1、tname=>   set +将其首字母 大写 T+name  ==>  setTname();
+	   tObj.setTname(rst.getString("t_name"));
+	   tObj.setTname(rst.getString("字段名");
+	 -->
+	<select id="getById" resultMap="resultMapTableTest">
+		select * from t_test where t_id=#{id};
+	</select>
+	<resultMap type="TableTest" id="resultMapTableTest">
+	   <!-- id/result完成同样的工作，将数据库中的列和实体属性进行对应赋值
+	   	  id
+	    -->
+	    <id column="t_id" property="id"/>		
+		<result column="t_name" property="tname"/>
+	</resultMap>
+</mapper>

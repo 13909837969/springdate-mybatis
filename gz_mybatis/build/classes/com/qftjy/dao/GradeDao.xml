@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.qftjy.dao.GradeDao"> 
+
+	<!--  
+	<select id="getById" resultType="Grade">
+		select * from grade where gid=#{id};
+	</select>
+	-->
+	
+	<!--1种：  一对一查询  两表关联，根据班级ID 1 查询班级信息和对应的老师信息  
+	<select id="getById" resultMap="getByIdTeacher">
+		select * from grade g LEFT JOIN teacher t on g.gid=t.gid where g.gid=#{id};
+	</select>
+	<resultMap type="Grade" id="getByIdTeacher">
+		<id property="gid" column="gid"/>
+		<result property="gname" column="gname"/>
+		<association property="teacher" javaType="Teacher">
+			<id property="tid" column="tid"/>
+			<result property="tname" column="tname"/>
+		</association>
+	</resultMap>
+	-->
+	<!-- 2种：  一对一查询  两表关联  分别执行
+		先执行查询出对应的班级，     select * from grade where id=#{id};		
+	    根据查出的班级ID，到教师表中查找教师信息 select * from teacher where gid=#{gid};
+	  -->
+	  <select id="getById" resultMap="getByIdTeacher2">
+		select * from grade where gid=#{id};
+	  </select>
+	  <resultMap type="Grade" id="getByIdTeacher2">
+		  	<id property="gid" column="gid"/>
+			<result property="gname" column="gname"/>
+			<association property="teacher" column="gid" select="getTeacherById"></association>
+	  </resultMap>
+	  <select id="getTeacherById" resultType="Teacher">
+	   		select * from teacher where gid=#{gid}
+	  </select>
+	  <insert id="add" parameterType="Grade">
+	  	insert into grade values(#{gid},#{gname});
+	  </insert>
+	  
+	  <resultMap type="Grade" id="getGradeInfo">
+	  		<id property="gid" column="gid"/>
+			<result property="gname" column="gname"/>
+	  </resultMap>
+	  
+	 <!--1种、 一对多关联  班级对应多个学生 --> 
+	  <select id="getStudentsById" resultMap="getStudentsByIdMap">
+	  	select * from grade g, student s where g.gid=s.gid and  g.gid=#{gid};
+	  </select>
+	  <resultMap type="Grade" id="getStudentsByIdMap" extends="getGradeInfo">
+			<!--  1对多配置  ofType:指定集合所映射的类型 -->
+			<collection property="students" ofType="Student" >
+				<id property="sid" column="sid"></id>
+				<result property="sname" column="sname"/>
+				<result property="age" column="age"/>
+				<result property="gid" column="gid"/>
+			</collection>
+	  </resultMap>
+	  
+	  <!-- 2、  一对多关联  班级对应多个学生-->
+	  <select id="getStudentsById1" parameterType="String" resultMap="getStudentsByIdMap1">
+	  		select * from grade where gid=#{gid};
+	  </select>
+	  <resultMap type="Grade" id="getStudentsByIdMap1" >
+		  <id property="gid" column="gid"/>
+		  <result property="gname" column="gname"/>
+		   <!--   ofType:指定集合所映射的类型    column 对应关联的字段-->		
+		  <collection property="students"  select="getStudentsByGid" ofType="Student" column="gid"></collection>
+	  </resultMap>
+	  <select id="getStudentsByGid" resultType="Student">
+	  		select * from student where gid=#{gid};
+	  </select>
+	  
+	  <!--3、根据班级ID，得到班级信息，老师信息、所有学生信息。  -->
+	   <select id="getGradeAndTeacherAndStudentsByGid" parameterType="String" resultMap="getGradeAndTeacherAndStudentsByGidMap">
+	  		select * from grade where gid=#{gid};
+	  </select>
+	  <resultMap type="Grade" id="getGradeAndTeacherAndStudentsByGidMap" >
+		  <id property="gid" column="gid"/>
+		  <result property="gname" column="gname"/>
+		  <association property="teacher" column="gid" select="getTeacherById1"></association>
+		   <!--   ofType:指定集合所映射的类型    column 对应关联的字段-->		
+		  <collection property="students"  select="getStudentsByGid1" ofType="Student" column="gid"></collection>
+	  </resultMap>
+	  <!-- 对应的老师信息 -->
+	    <select id="getTeacherById1" resultType="Teacher">
+	   		select * from teacher where gid=#{gid}
+	  </select>
+	  <!-- 对应的学生列表信息 -->
+	   <select id="getStudentsByGid1" resultType="Student">
+	  		select * from student where gid=#{gid};
+	  </select>
+</mapper>

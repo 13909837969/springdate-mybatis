@@ -1,0 +1,24 @@
+PreparedStatement  预编译、防止SQL注入   ==>#{id}
+
+Statment  适合批量操作    ==>${value}   如果单值
+
+Mybatis #{}和${}区别：
+#{}  将传入的数据都当成一个字符串，会对自动传入的数据加一个双引号。相当于预处理中的占位符？ 预编译、防止SQL注入
+${}  将传入的数据直接显示生成在sql中，相当于拼接SQL串，对传入的值不做任何解释的原样输出
+     会引起SQL注入，常用于：传入对象名称、表名、字段名、排序、like查询等
+
+
+------------  1对N
+/*
+  1对1，关联关系字段（放在哪边都行，建议：放在后创建的表中）
+  1对N，关联关系字段（放在多的一方）
+	创建学生表  
+   学生表和班级关联为 多对一
+*/
+create table Student(
+	 sid varchar(36) primary key,  -- 主键ID
+   sname varchar(30),
+   age   int,
+   gid varchar(36)  -- 外键ID，关联Grade gid
+)
+

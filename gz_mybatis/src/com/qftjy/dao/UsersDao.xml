@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.qftjy.dao.UsersDao"> 
+	<!-- 给当前 mapper 开启二级缓存（小开关） -->
+	<cache></cache>
+	<!--namespace 配置命名空间  唯一
+		select 查询    id 查询的ID标识唯一值(statmentId)
+		parameterType 方法参数的类型
+		resultType    方法返回结果的类型       对于自定义类型：全类名（包名.类名）
+		myBatis中传值  #{值}
+	  -->
+	 <!-- 
+	 	#{id}
+这就告诉MyBatis创建一个PreparedStatement（预处理语句）参数。使用JDBC，这样的一个参数在SQL中会由一个“?”来标识，
+并被传递到一个新的预处理语句中，就像这样：
+// 相似的JDBC代码，不是MyBatis的
+String selectPerson = “SELECT * FROM PERSON WHERE ID=?”;
+PreparedStatement ps = conn.prepareStatement(selectPerson);
+ps.setInt(1,id);
+
+	  id 属性：在命名空间中唯一的标识符，可以被用来引用这条语句
+	  parametertype属性:将会传入这条语句的参数类的完全限定名或别名    ：java.lang.String:完全限定名  String：别名
+	  resultType:从这条语句中返回的期望类型的类的完全限定名或别名。注意集合情形，那应该是集合可以包含的类型，而不能是集合本身。使
+用resultType或resultMap，但不能同时使用。
+	  --> 
+	<select id="getUsersById" parameterType="String" resultType="Users"   >
+		select * from users  where id=#{id}
+	</select>
+	<!-- 查询所有的Users表的数据 -->
+	<select id="getList"  resultType="Users">
+		select * from users;
+	</select>
+	<!-- 删除 -->
+	<delete id="deleteById" parameterType="String"  >
+		delete from users where id=#{aa};
+	</delete>
+	<!-- 添加
+		#{id}==>Users.getId()
+	  -->
+	<insert id="add" parameterType="Users"  >
+		insert into users values(#{id},#{uname},#{upass},#{realname},#{currdate},#{remark});
+	</insert>
+	<!-- 修改 ，根据ID -->
+	<update id="update" parameterType="Users">
+		update users set uname=#{uname} , upass=#{upass}, realname=#{realname} where id=#{id};
+	</update>
+	<!-- 登录方法
+	 -->
+	 <select id="loginUsers" parameterType="Map" resultType="Users">
+	 	select * from users where uname=#{aaa} and upass=#{bbb};
+	 </select>
+	 <!-- 排序操作
+	 	由用户在前端进行操作,完成列表 排序
+	  -->
+	  <select id="getListSort" parameterType="Map" resultType="Users">
+	  	select * from users order by ${uname} ,${upass};
+	  </select>
+</mapper>
